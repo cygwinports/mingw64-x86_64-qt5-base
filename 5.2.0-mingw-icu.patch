@@ -1,0 +1,25 @@
+The Fedora mingw-icu cross-build patches remove the Win32-specific
+abbreviation of libicui8n to libicuin.
+
+--- origsrc/qtbase-opensource-src-5.2.0/config.tests/unix/icu/icu.pro	2013-12-08 11:09:54.000000000 -0600
++++ src/qtbase-opensource-src-5.2.0/config.tests/unix/icu/icu.pro	2014-01-05 20:55:53.463515300 -0600
+@@ -1,7 +1,7 @@
+ SOURCES = icu.cpp
+ CONFIG += console
+ CONFIG -= qt dylib
+-win32 {
++win32-msvc* {
+     CONFIG(static, static|shared) {
+         CONFIG(debug, debug|release) {
+             LIBS += -lsicuind -lsicuucd -lsicudtd
+--- origsrc/qtbase-opensource-src-5.2.0/src/corelib/tools/tools.pri	2013-12-08 11:09:52.000000000 -0600
++++ src/qtbase-opensource-src-5.2.0/src/corelib/tools/tools.pri	2014-01-05 21:07:16.363232600 -0600
+@@ -144,7 +144,7 @@ contains(QT_CONFIG,icu) {
+                tools/qcollator_icu.cpp \
+                tools/qtimezoneprivate_icu.cpp
+     DEFINES += QT_USE_ICU
+-    win32 {
++    win32-msvc* {
+         CONFIG(static, static|shared) {
+             CONFIG(debug, debug|release) {
+                 LIBS_PRIVATE += -lsicuind -lsicuucd -lsicudtd
