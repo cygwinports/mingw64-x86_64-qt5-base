@@ -38,8 +38,8 @@ PATCH_URI="
 	5.2.0-mingw-icu.patch
 "
 
-# native tool dependencies (not detected when using cross.cygclass)
-REQUIRES="libgcc1 libstdc++6 zlib0 zlib-devel"
+# native tool dependencies (not detected due to use of private hostlibdir)
+REQUIRES="zlib-devel"
 
 # qmake/moc/uic/rcc are built native, libraries are cross-compiled
 # therefore, these need to be determined by mkspecs
