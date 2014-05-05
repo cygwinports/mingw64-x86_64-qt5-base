@@ -4,7 +4,7 @@ inherit cross
 
 NAME="mingw64-x86_64-qt5-base"
 VERSION=5.2.1
-RELEASE=1
+RELEASE=2
 CATEGORY="Devel"
 SUMMARY="Qt core framework for Win64 toolchain"
 DESCRIPTION="Qt is a cross-platform application framework for desktop and
@@ -26,15 +26,16 @@ PATCH_URI="
 	fedora/qt5-dont-add-resource-files-to-qmake-libs.patch
 	fedora/qt5-prevent-debug-library-names-in-pkgconfig-files.patch
 	fedora/qt5-qmake-implib-dll-a.patch
+	fedora/qtbase-opensource-src-5.2.1-QTBUG-38367.patch
 	fedora/qt5-use-win32-g++-mkspecs-profile.patch
 	fedora/qt5-merge-static-and-shared-library-trees.patch
 	fedora/qt5-qtbase-fix-linking-against-static-pcre.patch
 	fedora/qt5-use-system-zlib-in-host-libs.patch
+	fedora/qt5-rename-qtmain-to-qt5main.patch
 	5.1.0-cygwin-mkspecs.patch
 	5.1.0-cygwin-qmake.patch
 	5.1.0-cygwin-unix.patch
 	5.1.0-makedepend.patch
-	5.1.1-mingw-qt5main.patch
 	5.2.0-mingw-icu.patch
 "
 
