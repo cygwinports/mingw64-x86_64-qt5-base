@@ -3,8 +3,8 @@ CROSS_QMAKESPEC="win32-g++"
 inherit cross
 
 NAME="mingw64-x86_64-qt5-base"
-VERSION=5.2.1
-RELEASE=2
+VERSION=5.3.2
+RELEASE=1
 CATEGORY="Devel"
 SUMMARY="Qt core framework for Win64 toolchain"
 DESCRIPTION="Qt is a cross-platform application framework for desktop and
@@ -21,26 +21,23 @@ SRC_DIR="qtbase-opensource-src-${VERSION}"
 #	fedora/qt5-use-external-angle-library.patch
 # Do NOT include the shared-host-libs patches, they require ELF rpath
 PATCH_URI="
-	fedora/qt5-workaround-qtbug-29426.patch
 	fedora/qt5-workaround-pkgconfig-install-issue.patch
 	fedora/qt5-dont-add-resource-files-to-qmake-libs.patch
 	fedora/qt5-prevent-debug-library-names-in-pkgconfig-files.patch
 	fedora/qt5-qmake-implib-dll-a.patch
-	fedora/qtbase-opensource-src-5.2.1-QTBUG-38367.patch
 	fedora/qt5-use-win32-g++-mkspecs-profile.patch
 	fedora/qt5-merge-static-and-shared-library-trees.patch
 	fedora/qt5-qtbase-fix-linking-against-static-pcre.patch
 	fedora/qt5-use-system-zlib-in-host-libs.patch
 	fedora/qt5-rename-qtmain-to-qt5main.patch
-	5.1.0-cygwin-mkspecs.patch
-	5.1.0-cygwin-qmake.patch
-	5.1.0-cygwin-unix.patch
-	5.1.0-makedepend.patch
-	5.2.0-mingw-icu.patch
+	5.3.2-cygwin-mkspecs.patch
+	5.3.2-cygwin-qmake.patch
+	5.3.2-cygwin-unix.patch
+	5.3.2-makedepend.patch
 "
 
-# native tool dependencies (not detected due to use of private hostlibdir)
-REQUIRES="zlib-devel"
+# native tool dependencies (not detected when using cross.cygclass)
+REQUIRES="libgcc1 libstdc++6 zlib0 zlib-devel"
 
 # qmake/moc/uic/rcc are built native, libraries are cross-compiled
 # therefore, these need to be determined by mkspecs
@@ -60,7 +57,7 @@ src_compile() {
 		-plugindir ${CROSS_LIBDIR}/qt5/plugins \
 		-importdir ${CROSS_LIBDIR}/qt5/imports \
 		-qmldir ${CROSS_LIBDIR}/qt5/qml \
-		-libexecdir ${CROSS_LIBDIR}/qt5/libexec \
+		-libexecdir ${CROSS_BINDIR} \
 		-datadir ${CROSS_DATADIR}/qt5 \
 		-docdir ${CROSS_DATADIR}/qt5/doc \
 		-sysconfdir ${CROSS_PREFIX}/etc/qt5 \
@@ -71,6 +68,7 @@ src_compile() {
 		-xplatform ${CROSS_QMAKESPEC} \
 		-device-option CROSS_COMPILE=${CROSS_HOST}- \
 		-confirm-license -opensource \
+		-optimized-qmake \
 		-force-pkg-config \
 		-release -shared \
 		-no-rpath -no-reduce-exports -no-reduce-relocations \
@@ -83,7 +81,7 @@ src_compile() {
 		-system-zlib -system-libpng -system-libjpeg -dbus-linked \
 		-openssl-linked -system-pcre \
 		-audio-backend -no-fontconfig \
-		-gui -widgets -no-cups -icu -pch \
+		-gui -widgets -no-cups -no-icu -iconv -pch \
 		-no-xcb -no-xrender -no-xkbcommon \
 		-opengl desktop -no-egl -no-glib -no-gtkstyle \
 		-nomake examples \
@@ -115,6 +113,7 @@ src_compile() {
 		-xplatform ${CROSS_QMAKESPEC} \
 		-device-option CROSS_COMPILE=${CROSS_HOST}- \
 		-confirm-license -opensource \
+		-optimized-qmake \
 		-force-pkg-config \
 		-release -static \
 		-no-rpath -no-reduce-exports -no-reduce-relocations \
