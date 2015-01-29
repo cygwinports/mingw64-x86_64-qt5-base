@@ -4,7 +4,7 @@ inherit cross
 
 NAME="mingw64-x86_64-qt5-base"
 VERSION=5.3.2
-RELEASE=1
+RELEASE=2
 CATEGORY="Devel"
 SUMMARY="Qt core framework for Win64 toolchain"
 DESCRIPTION="Qt is a cross-platform application framework for desktop and
