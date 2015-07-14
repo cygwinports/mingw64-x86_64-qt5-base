@@ -1,10 +1,10 @@
-CROSS_HOST="x86_64-w64-mingw32"
-CROSS_QMAKESPEC="win32-g++"
-inherit cross
+TOOLCHAIN_TARGET="x86_64-w64-mingw32"
+XQMAKESPEC="win32-g++"
+inherit toolchain
 
 NAME="mingw64-x86_64-qt5-base"
-VERSION=5.3.2
-RELEASE=2
+VERSION=5.4.2
+RELEASE=1
 CATEGORY="Devel"
 SUMMARY="Qt core framework for Win64 toolchain"
 DESCRIPTION="Qt is a cross-platform application framework for desktop and
@@ -30,6 +30,8 @@ PATCH_URI="
 	fedora/qt5-qtbase-fix-linking-against-static-pcre.patch
 	fedora/qt5-use-system-zlib-in-host-libs.patch
 	fedora/qt5-rename-qtmain-to-qt5main.patch
+	fedora/qt5-fix-static-dbus-detection.patch
+	fedora/qt5-fix-static-harfbuzz-detection.patch
 	5.3.2-cygwin-mkspecs.patch
 	5.3.2-cygwin-qmake.patch
 	5.3.2-cygwin-unix.patch
@@ -43,30 +45,33 @@ REQUIRES="libgcc1 libstdc++6 zlib0 zlib-devel"
 # therefore, these need to be determined by mkspecs
 unset CC CXX
 
+CFLAGS+=" -fno-keep-inline-dllexport"
+CXXFLAGS+=" -fno-keep-inline-dllexport"
+
 src_compile() {
 	mkdir -p ${B}/shared
 	cd ${B}/shared
 
 	${S}/configure \
-		-hostprefix /usr/lib/qt5/${CROSS_HOST} \
-		-prefix ${CROSS_PREFIX} \
-		-bindir ${CROSS_BINDIR} \
-		-headerdir ${CROSS_INCLUDEDIR}/qt5 \
-		-libdir ${CROSS_LIBDIR} \
-		-archdatadir ${CROSS_DATADIR}/qt5 \
-		-plugindir ${CROSS_LIBDIR}/qt5/plugins \
-		-importdir ${CROSS_LIBDIR}/qt5/imports \
-		-qmldir ${CROSS_LIBDIR}/qt5/qml \
-		-libexecdir ${CROSS_BINDIR} \
-		-datadir ${CROSS_DATADIR}/qt5 \
-		-docdir ${CROSS_DATADIR}/qt5/doc \
-		-sysconfdir ${CROSS_PREFIX}/etc/qt5 \
-		-translationdir ${CROSS_DATADIR}/qt5/translations \
-		-examplesdir ${CROSS_LIBDIR}/qt5/examples \
-		-testsdir ${CROSS_LIBDIR}/qt5/tests \
+		-hostprefix /usr/lib/qt5/${TOOLCHAIN_TARGET} \
+		-prefix ${TOOLCHAIN_PREFIX} \
+		-bindir ${TOOLCHAIN_BINDIR} \
+		-headerdir ${TOOLCHAIN_INCLUDEDIR}/qt5 \
+		-libdir ${TOOLCHAIN_LIBDIR} \
+		-archdatadir ${TOOLCHAIN_DATADIR}/qt5 \
+		-plugindir ${TOOLCHAIN_LIBDIR}/qt5/plugins \
+		-importdir ${TOOLCHAIN_LIBDIR}/qt5/imports \
+		-qmldir ${TOOLCHAIN_LIBDIR}/qt5/qml \
+		-libexecdir ${TOOLCHAIN_BINDIR} \
+		-datadir ${TOOLCHAIN_DATADIR}/qt5 \
+		-docdir ${TOOLCHAIN_DATADIR}/qt5/doc \
+		-sysconfdir ${TOOLCHAIN_PREFIX}/etc/qt5 \
+		-translationdir ${TOOLCHAIN_DATADIR}/qt5/translations \
+		-examplesdir ${TOOLCHAIN_LIBDIR}/qt5/examples \
+		-testsdir ${TOOLCHAIN_LIBDIR}/qt5/tests \
 		-platform cygwin-g++ \
-		-xplatform ${CROSS_QMAKESPEC} \
-		-device-option CROSS_COMPILE=${CROSS_HOST}- \
+		-xplatform ${XQMAKESPEC} \
+		-device-option CROSS_COMPILE=${TOOLCHAIN_TARGET}- \
 		-confirm-license -opensource \
 		-optimized-qmake \
 		-force-pkg-config \
@@ -93,35 +98,35 @@ src_compile() {
 	cd ${B}/static
 
 	${S}/configure \
-		-hostprefix /usr/lib/qt5/${CROSS_HOST} \
-		-prefix ${CROSS_PREFIX} \
-		-bindir ${CROSS_BINDIR} \
-		-headerdir ${CROSS_INCLUDEDIR}/qt5 \
-		-libdir ${CROSS_LIBDIR} \
-		-archdatadir ${CROSS_DATADIR}/qt5 \
-		-plugindir ${CROSS_LIBDIR}/qt5/plugins \
-		-importdir ${CROSS_LIBDIR}/qt5/imports \
-		-qmldir ${CROSS_LIBDIR}/qt5/qml \
-		-libexecdir ${CROSS_LIBDIR}/qt5/libexec \
-		-datadir ${CROSS_DATADIR}/qt5 \
-		-docdir ${CROSS_DATADIR}/qt5/doc \
-		-sysconfdir ${CROSS_PREFIX}/etc/qt5 \
-		-translationdir ${CROSS_DATADIR}/qt5/translations \
-		-examplesdir ${CROSS_LIBDIR}/qt5/examples \
-		-testsdir ${CROSS_LIBDIR}/qt5/tests \
+		-hostprefix /usr/lib/qt5/${TOOLCHAIN_TARGET} \
+		-prefix ${TOOLCHAIN_PREFIX} \
+		-bindir ${TOOLCHAIN_BINDIR} \
+		-headerdir ${TOOLCHAIN_INCLUDEDIR}/qt5 \
+		-libdir ${TOOLCHAIN_LIBDIR} \
+		-archdatadir ${TOOLCHAIN_DATADIR}/qt5 \
+		-plugindir ${TOOLCHAIN_LIBDIR}/qt5/plugins \
+		-importdir ${TOOLCHAIN_LIBDIR}/qt5/imports \
+		-qmldir ${TOOLCHAIN_LIBDIR}/qt5/qml \
+		-libexecdir ${TOOLCHAIN_BINDIR} \
+		-datadir ${TOOLCHAIN_DATADIR}/qt5 \
+		-docdir ${TOOLCHAIN_DATADIR}/qt5/doc \
+		-sysconfdir ${TOOLCHAIN_PREFIX}/etc/qt5 \
+		-translationdir ${TOOLCHAIN_DATADIR}/qt5/translations \
+		-examplesdir ${TOOLCHAIN_LIBDIR}/qt5/examples \
+		-testsdir ${TOOLCHAIN_LIBDIR}/qt5/tests \
 		-platform cygwin-g++ \
-		-xplatform ${CROSS_QMAKESPEC} \
-		-device-option CROSS_COMPILE=${CROSS_HOST}- \
+		-xplatform ${XQMAKESPEC} \
+		-device-option CROSS_COMPILE=${TOOLCHAIN_TARGET}- \
 		-confirm-license -opensource \
 		-optimized-qmake \
 		-force-pkg-config \
 		-release -static \
 		-no-rpath -no-reduce-exports -no-reduce-relocations \
 		-no-sql-mysql \
-		-plugin-sql-odbc \
-		-plugin-sql-psql \
-		-plugin-sql-sqlite -system-sqlite \
-		-plugin-sql-tds \
+		-qt-sql-odbc \
+		-no-sql-psql \
+		-qt-sql-sqlite -system-sqlite \
+		-no-sql-tds \
 		-no-sql-db2 -no-sql-ibase -no-sql-oci -no-sql-sqlite2 \
 		-system-zlib -system-libpng -system-libjpeg -dbus-linked \
 		-openssl-linked -system-pcre \
@@ -144,34 +149,34 @@ src_install() {
 	cygmake INSTALL_ROOT=${D} install
 
 	# DLLS are installed to both bindir and libdir, only need one
-	rm -f ${D}${CROSS_LIBDIR}/*.dll
+	rm -f ${D}${TOOLCHAIN_LIBDIR}/*.dll
 
 	dodir /usr/bin
-	pushd ${D}/usr/lib/qt5/${CROSS_HOST}/bin
+	pushd ${D}/usr/lib/qt5/${TOOLCHAIN_TARGET}/bin
 	for x in *
 	do
 		x5=${x%.*}-qt5.${x#*.}
-		dosym ../lib/qt5/${CROSS_HOST}/bin/${x} /usr/bin/${CROSS_HOST}-${x5%.*}
+		dosym ../lib/qt5/${TOOLCHAIN_TARGET}/bin/${x} /usr/bin/${TOOLCHAIN_TARGET}-${x5%.*}
 	done
 	popd
 
-	pushd ${D}/usr/lib/qt5/${CROSS_HOST}/mkspecs
+	pushd ${D}/usr/lib/qt5/${TOOLCHAIN_TARGET}/mkspecs
 	# remove all mkspecs not required for this host or host_build
 	for d in *
 	do
 		case $d in
-		common|features|modules|cygwin-g*|${CROSS_QMAKESPEC}|*.pri) ;;
+		common|features|modules|cygwin-g*|${XQMAKESPEC}|*.pri) ;;
 		*)      rmdirs+=" $d" ;;
 		esac
 	done
 	rm -fr ${rmdirs}
-	ln -s ${CROSS_QMAKESPEC} default
+	ln -s ${XQMAKESPEC} default
 	ln -s cygwin-g++ default-host
 	# remove package-specific flags from qmake configuration
 	sed -i -e 's| -fdebug-prefix[^ ]*||g' qmodule.pri
 	popd
 
-	sed -i -e '/^Libs\.private/s/-luuid/-Wl,&/g' ${D}${CROSS_LIBDIR}/pkgconfig/*.pc
+	sed -i -e '/^Libs\.private/s/-luuid/-Wl,&/g' ${D}${TOOLCHAIN_LIBDIR}/pkgconfig/*.pc
 
 	dodoc ${S}/LGPL_EXCEPTION.txt ${S}/LICENSE.{FDL,*GPL}
 }
