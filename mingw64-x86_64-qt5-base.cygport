@@ -3,7 +3,7 @@ XQMAKESPEC="win32-g++"
 inherit toolchain
 
 NAME="mingw64-x86_64-qt5-base"
-VERSION=5.4.2
+VERSION=5.5.1
 RELEASE=1
 CATEGORY="Devel"
 SUMMARY="Qt core framework for Win64 toolchain"
@@ -32,14 +32,14 @@ PATCH_URI="
 	fedora/qt5-rename-qtmain-to-qt5main.patch
 	fedora/qt5-fix-static-dbus-detection.patch
 	fedora/qt5-fix-static-harfbuzz-detection.patch
-	5.3.2-cygwin-mkspecs.patch
-	5.3.2-cygwin-qmake.patch
-	5.3.2-cygwin-unix.patch
-	5.3.2-makedepend.patch
+	fedora/qt5-use-correct-pkg-config-static-flags.patch
+	fedora/qt5-disable-angle-opengl-testcode.patch
+	5.5.1-cygwin-mkspecs.patch
+	5.5.1-cygwin-qmake.patch
+	5.5.1-cygwin-unix.patch
+	5.5.1-makedepend.patch
+	5.5.1-no-undefined.patch
 "
-
-# native tool dependencies (not detected when using cross.cygclass)
-REQUIRES="libgcc1 libstdc++6 zlib0 zlib-devel"
 
 # qmake/moc/uic/rcc are built native, libraries are cross-compiled
 # therefore, these need to be determined by mkspecs
@@ -85,7 +85,7 @@ src_compile() {
 		-no-sql-db2 -no-sql-ibase -no-sql-oci -no-sql-sqlite2 \
 		-system-zlib -system-libpng -system-libjpeg -dbus-linked \
 		-openssl-linked -system-pcre \
-		-audio-backend -no-fontconfig \
+		-audio-backend -no-fontconfig -system-harfbuzz \
 		-gui -widgets -no-cups -no-icu -iconv -pch \
 		-no-xcb -no-xrender -no-xkbcommon \
 		-opengl desktop -no-egl -no-glib -no-gtkstyle \

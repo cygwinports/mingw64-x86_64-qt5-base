@@ -1,0 +1,9 @@
+--- origsrc/qtbase-opensource-src-5.5.1/mkspecs/features/qt_tool.prf	2015-10-12 23:35:32.000000000 -0500
++++ src/qtbase-opensource-src-5.5.1/mkspecs/features/qt_tool.prf	2015-10-18 17:21:18.984875600 -0500
+@@ -63,3 +63,6 @@ CONFIG += console
+         cache(QT_TOOL.$${MODULE}.$$var, transient)
+ 
+ }
++
++contains(QT_CONFIG, system-zlib): LIBS_PRIVATE += -lz
++host_build: LIBS += -L$$[QT_HOST_LIBS]

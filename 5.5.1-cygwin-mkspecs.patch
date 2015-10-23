@@ -1,19 +1,21 @@
---- origsrc/qtbase-opensource-src-5.3.2/mkspecs/cygwin-g++/qmake.conf	2014-09-11 05:48:07.000000000 -0500
-+++ src/qtbase-opensource-src-5.3.2/mkspecs/cygwin-g++/qmake.conf	2014-10-24 12:02:24.415930700 -0500
-@@ -14,8 +14,11 @@ QMAKE_COMPILER          = gcc
+--- origsrc/qtbase-opensource-src-5.5.1/mkspecs/cygwin-g++/qmake.conf	2015-10-12 23:35:32.000000000 -0500
++++ src/qtbase-opensource-src-5.5.1/mkspecs/cygwin-g++/qmake.conf	2015-10-18 17:21:59.883214800 -0500
+@@ -14,9 +14,12 @@ QMAKE_COMPILER          = gcc
  QMAKE_CC                = gcc
  QMAKE_LEX               = flex
  QMAKE_LEXFLAGS          =
 -QMAKE_YACC              = byacc
 +QMAKE_YACC              = yacc
  QMAKE_YACCFLAGS         = -d
+-QMAKE_CFLAGS            = -pipe
 +QMAKE_YACCFLAGS_MANGLE  = -p $base -b $base
 +QMAKE_YACC_HEADER       = $base.tab.h
 +QMAKE_YACC_SOURCE       = $base.tab.c
- QMAKE_CFLAGS            = -pipe
++QMAKE_CFLAGS            = -pipe -fno-keep-inline-dllexport
  QMAKE_CFLAGS_DEPS       = -M
  QMAKE_CFLAGS_WARN_ON    = -Wall -W
-@@ -25,9 +28,24 @@ QMAKE_CFLAGS_DEBUG      = -g
+ QMAKE_CFLAGS_WARN_OFF   = -w
+@@ -25,9 +28,23 @@ QMAKE_CFLAGS_DEBUG      = -g
  QMAKE_CFLAGS_SHLIB      =
  QMAKE_CFLAGS_YACC       = -Wno-unused -Wno-parentheses
  QMAKE_CFLAGS_THREAD     = -D_REENTRANT
@@ -29,7 +31,6 @@
 +QMAKE_CFLAGS_SSE4_2     = -msse4.2
 +QMAKE_CFLAGS_AVX        = -mavx
 +QMAKE_CFLAGS_AVX2       = -mavx2
-+QMAKE_CFLAGS_IWMMXT     = -mcpu=iwmmxt
 +QMAKE_CFLAGS_NEON       = -mfpu=neon
  
  QMAKE_CXX               = g++
@@ -38,10 +39,15 @@
  QMAKE_CXXFLAGS_DEPS     = $$QMAKE_CFLAGS_DEPS
  QMAKE_CXXFLAGS_WARN_ON  = $$QMAKE_CFLAGS_WARN_ON
  QMAKE_CXXFLAGS_WARN_OFF = $$QMAKE_CFLAGS_WARN_OFF
-@@ -36,13 +43,16 @@ QMAKE_CXXFLAGS_DEBUG    = $$QMAKE_CFLAGS
+@@ -36,13 +53,21 @@ QMAKE_CXXFLAGS_DEBUG    = $$QMAKE_CFLAGS
  QMAKE_CXXFLAGS_SHLIB    = $$QMAKE_CFLAGS_SHLIB
  QMAKE_CXXFLAGS_YACC     = $$QMAKE_CFLAGS_YACC
  QMAKE_CXXFLAGS_THREAD   = $$QMAKE_CFLAGS_THREAD
++QMAKE_CXXFLAGS_RTTI_ON  = -frtti
++QMAKE_CXXFLAGS_RTTI_OFF = -fno-rtti
++QMAKE_CXXFLAGS_EXCEPTIONS_ON = -fexceptions
++QMAKE_CXXFLAGS_EXCEPTIONS_OFF = -fno-exceptions
++QMAKE_CXXFLAGS_SPLIT_SECTIONS = $$QMAKE_CFLAGS_SPLIT_SECTIONS
 +QMAKE_CXXFLAGS_RELEASE_WITH_DEBUGINFO = $$QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO
 +QMAKE_CXXFLAGS_PRECOMPILE     = -x c++-header -c ${QMAKE_PCH_INPUT} -o ${QMAKE_PCH_OUTPUT}
 +QMAKE_CXXFLAGS_USE_PRECOMPILE = $$QMAKE_CFLAGS_USE_PRECOMPILE
@@ -59,7 +65,7 @@
  
  QMAKE_LINK              = g++
  QMAKE_LINK_SHLIB        = g++
-@@ -53,9 +63,10 @@ QMAKE_LFLAGS_RELEASE    =
+@@ -53,9 +78,11 @@ QMAKE_LFLAGS_RELEASE    =
  QMAKE_LFLAGS_DEBUG      =
  QMAKE_LFLAGS_SHLIB      = -shared
  QMAKE_LFLAGS_PLUGIN     = $$QMAKE_LFLAGS_SHLIB
@@ -69,10 +75,11 @@
 -QMAKE_LFLAGS_RPATH      = -Wl,-rpath,
 +QMAKE_LFLAGS_RPATH      =
 +QMAKE_LFLAGS_CXX11      =
++QMAKE_LFLAGS_GCSECTIONS = -Wl,--gc-sections
  QMAKE_CYGWIN_SHLIB      = 1
  QMAKE_CYGWIN_EXE        = 1
  
-@@ -64,9 +75,10 @@ QMAKE_LIBS_DYNLOAD      = -ldl
+@@ -64,9 +91,10 @@ QMAKE_LIBS_DYNLOAD      = -ldl
  QMAKE_LIBS_X11          = -lXext -lX11
  QMAKE_LIBS_OPENGL       = -lGL
  QMAKE_LIBS_THREAD       = -lpthread
@@ -84,9 +91,9 @@
  
  QMAKE_AR                = ar cqs
  QMAKE_OBJCOPY           = objcopy
---- origsrc/qtbase-opensource-src-5.3.2/mkspecs/cygwin-g++/qplatformdefs.h	2014-09-11 05:48:07.000000000 -0500
-+++ src/qtbase-opensource-src-5.3.2/mkspecs/cygwin-g++/qplatformdefs.h	2014-10-24 12:02:24.420431300 -0500
-@@ -71,14 +71,12 @@
+--- origsrc/qtbase-opensource-src-5.5.1/mkspecs/cygwin-g++/qplatformdefs.h	2015-10-12 23:35:32.000000000 -0500
++++ src/qtbase-opensource-src-5.5.1/mkspecs/cygwin-g++/qplatformdefs.h	2015-10-18 17:21:59.887215100 -0500
+@@ -63,14 +63,12 @@
  
  #include <sys/types.h>
  #include <sys/ioctl.h>
@@ -103,9 +110,9 @@
  #include <netinet/in.h>
  
  #define QT_NO_USE_FSEEKO
---- origsrc/qtbase-opensource-src-5.3.2/mkspecs/features/qt_functions.prf	2014-09-11 05:48:07.000000000 -0500
-+++ src/qtbase-opensource-src-5.3.2/mkspecs/features/qt_functions.prf	2014-10-24 12:02:24.425431900 -0500
-@@ -261,7 +261,7 @@ defineTest(qtAddTargetEnv) {
+--- origsrc/qtbase-opensource-src-5.5.1/mkspecs/features/qt_functions.prf	2015-10-12 23:35:32.000000000 -0500
++++ src/qtbase-opensource-src-5.5.1/mkspecs/features/qt_functions.prf	2015-10-18 17:21:59.891215300 -0500
+@@ -269,7 +269,7 @@ defineTest(qtAddTargetEnv) {
                  deppath += $$system_path($$eval(QT.$${dep}.libs))
              ptypes += $$eval(QT.$${dep}.plugin_types)
          }
@@ -114,17 +121,8 @@
              deppath.name = PATH
          } else:contains(QMAKE_HOST.os, Linux|FreeBSD|OpenBSD|NetBSD|DragonFly|SunOS|HP-UX|QNX|GNU) {
              deppath.name = LD_LIBRARY_PATH
---- origsrc/qtbase-opensource-src-5.1.1/mkspecs/features/qt_tool.prf	2013-08-25 13:03:47.000000000 -0500
-+++ src/qtbase-opensource-src-5.1.1/mkspecs/features/qt_tool.prf	2014-01-02 23:48:17.545298900 -0600
-@@ -43,3 +43,6 @@ CONFIG += console
-         cache(QT_TOOL.$${MODULE}.$$var, transient)
- 
- }
-+
-+contains(QT_CONFIG, system-zlib): LIBS_PRIVATE += -lz
-+host_build: LIBS += -L$$[QT_HOST_LIBS]
---- origsrc/qtbase-opensource-src-5.3.2/src/tools/bootstrap/bootstrap.pro	2014-09-11 05:48:01.000000000 -0500
-+++ src/qtbase-opensource-src-5.3.2/src/tools/bootstrap/bootstrap.pro	2014-10-24 12:02:24.432432800 -0500
+--- origsrc/qtbase-opensource-src-5.5.1/src/tools/bootstrap/bootstrap.pro	2015-10-12 23:35:29.000000000 -0500
++++ src/qtbase-opensource-src-5.5.1/src/tools/bootstrap/bootstrap.pro	2015-10-18 17:21:59.897215600 -0500
 @@ -5,7 +5,7 @@ QT =
  CONFIG += internal_module force_bootstrap
  
