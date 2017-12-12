@@ -1,0 +1,13 @@
+--- origsrc/qtbase-opensource-src-5.9.2/src/plugins/sqldrivers/configure.json	2017-10-02 03:43:38.000000000 -0500
++++ src/qtbase-opensource-src-5.9.2/src/plugins/sqldrivers/configure.json	2017-10-24 12:53:07.671043500 -0500
+@@ -100,8 +100,8 @@
+                 "include": [ "sybfront.h", "sybdb.h" ]
+             },
+             "sources": [
+-                { "type": "sybaseEnv", "libs": "-lNTWDBLIB", "condition": "config.win32" },
+-                { "type": "sybaseEnv", "libs": "-lsybdb", "condition": "!config.win32" }
++                { "type": "sybaseEnv", "libs": "-lNTWDBLIB", "condition": "config.msvc" },
++                { "type": "sybaseEnv", "libs": "-lsybdb", "condition": "!config.msvc" }
+             ]
+         },
+         "oci": {

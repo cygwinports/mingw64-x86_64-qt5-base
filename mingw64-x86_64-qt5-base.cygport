@@ -3,7 +3,7 @@ XQMAKESPEC="win32-g++"
 inherit toolchain
 
 NAME="mingw64-x86_64-qt5-base"
-VERSION=5.6.2
+VERSION=5.9.3
 RELEASE=1
 CATEGORY="Devel"
 SUMMARY="Qt core framework for Win64 toolchain"
@@ -17,46 +17,45 @@ SRC_URI="http://download.qt.io/official_releases/qt/${VERSION%.*}/${VERSION}/sub
 SRC_DIR="qtbase-opensource-src-${VERSION}"
 
 # When ANGLE can be built:
-#	fedora/qt5-add-angle-support.patch
-#	fedora/qt5-use-external-angle-library.patch
-# Do NOT include the shared-host-libs patches, they require ELF rpath
+#	fedora/0003-Use-external-ANGLE-library.patch
+# Do NOT include the dynamic-host-libs patches, they require ELF rpath
 PATCH_URI="
-	fedora/qt5-workaround-pkgconfig-install-issue.patch
-	fedora/qt5-dont-add-resource-files-to-qmake-libs.patch
-	fedora/qt5-prevent-debug-library-names-in-pkgconfig-files.patch
-	fedora/qt5-qmake-implib-dll-a.patch
-	fedora/dfb9b9e1f7ff723bbb082875962ddcf0d69d1db2.diff
-	fedora/qt5-use-win32-g++-mkspecs-profile.patch
-	fedora/qt5-merge-static-and-shared-library-trees.patch
-	fedora/qt5-qtbase-fix-linking-against-static-pcre.patch
-	fedora/qt5-use-system-zlib-in-host-libs.patch
-	fedora/qt5-rename-qtmain-to-qt5main.patch
-	fedora/qt5-fix-static-dbus-detection.patch
-	fedora/qt5-fix-static-harfbuzz-detection.patch
-	fedora/qt5-use-correct-pkg-config-static-flags.patch
-	fedora/qt5-pkgconfig-static-library-name-workaround.patch
-	5.6.2-cygwin-mkspecs.patch
-	5.6.2-cygwin-qmake.patch
-	5.5.1-cygwin-unix.patch
+	fedora/0005-Make-sure-.pc-files-are-installed-correctly.patch
+	fedora/0006-Don-t-add-resource-files-to-LIBS-parameter.patch
+	fedora/0007-Prevent-debug-library-names-in-pkg-config-files.patch
+	fedora/0016-Rename-qtmain-to-qt5main.patch
+	fedora/0019-Use-system-zlib-for-build-tools.patch
+	fedora/0020-Disable-determing-default-include-and-lib-dirs-at-qm.patch
+	fedora/0021-Use-.dll.a-as-import-lib-extension.patch
+	fedora/0022-Merge-shared-and-static-library-trees.patch
+	fedora/0026-Fix-macro-invoking-moc-rcc-and-uic.patch
+	fedora/0027-Ignore-errors-about-missing-feature-static.patch
+	fedora/0028-Enable-and-fix-use-of-iconv.patch
+	fedora/0029-Ignore-failing-pkg-config-test.patch
+	fedora/0030-Prevent-qmake-from-messing-static-lib-dependencies.patch
+	5.9-cygwin-mkspecs.patch
+	5.9-cygwin-qmake.patch
+	5.9-cygwin-unix.patch
 	5.5.1-makedepend.patch
-	5.6.2-no-undefined.patch
+	5.9-no-undefined.patch
+	5.9-mingw-configure.patch
+	5.9-mingw-mkspecs.patch
 "
 
 # this is mostly cross-compiled, the native tools are only a small part
 RESTRICT="debuginfo"
 
+# loaded dynamically
+REQUIRES="mingw64-x86_64-openssl"
 # native objdump cannot read PE+ binaries :-(
 if defined ARCH_i686
 then
-REQUIRES+=" mingw64-x86_64-dbus mingw64-x86_64-freetds mingw64-x86_64-gcc-core mingw64-x86_64-gcc-g++ mingw64-x86_64-harfbuzz mingw64-x86_64-libjpeg-turbo mingw64-x86_64-libpng mingw64-x86_64-mariadb-connector-c mingw64-x86_64-openssl mingw64-x86_64-pcre mingw64-x86_64-postgresql mingw64-x86_64-sqlite3 mingw64-x86_64-zlib"
+REQUIRES+=" mingw64-x86_64-dbus mingw64-x86_64-freetds mingw64-x86_64-freetype2 mingw64-x86_64-gcc-core mingw64-x86_64-gcc-g++ mingw64-x86_64-harfbuzz mingw64-x86_64-libjpeg-turbo mingw64-x86_64-libpng mingw64-x86_64-mariadb-connector-c mingw64-x86_64-pcre2 mingw64-x86_64-postgresql mingw64-x86_64-sqlite3 mingw64-x86_64-win-iconv mingw64-x86_64-zlib"
 fi
 
 # qmake/moc/uic/rcc are built native, libraries are cross-compiled
 # therefore, these need to be determined by mkspecs
 unset CC CXX
-
-CFLAGS+=" -fno-keep-inline-dllexport"
-CXXFLAGS+=" -fno-keep-inline-dllexport"
 
 src_compile() {
 	mkdir -p ${B}/shared
@@ -94,12 +93,12 @@ src_compile() {
 		-plugin-sql-tds \
 		-no-sql-db2 -no-sql-ibase -no-sql-oci -no-sql-sqlite2 \
 		-system-zlib -system-libpng -system-libjpeg \
-		-dbus-linked -openssl-linked -system-pcre \
-		-audio-backend -no-fontconfig -system-harfbuzz \
-		-gui -widgets -no-cups -no-icu -iconv -pch \
-		-no-xcb -no-xrender -no-xkbcommon \
-		-opengl desktop -no-egl -no-glib -no-gtkstyle \
+		-dbus -openssl -system-pcre \
+		-no-fontconfig -system-harfbuzz -system-freetype \
+		-gui -widgets -no-cups -no-icu -iconv \
+		-opengl desktop -no-egl -no-glib \
 		-nomake examples \
+		`${TOOLCHAIN_TARGET}-pkg-config --cflags-only-I freetype2 dbus-1` \
 		|| error "configure failed"
 
 	cygmake
@@ -141,12 +140,13 @@ src_compile() {
 		-no-sql-tds \
 		-no-sql-db2 -no-sql-ibase -no-sql-oci -no-sql-sqlite2 \
 		-system-zlib -system-libpng -system-libjpeg \
-		-dbus-linked -openssl-linked -system-pcre \
-		-audio-backend -no-fontconfig -system-harfbuzz \
-		-gui -widgets -no-cups -no-icu -iconv -pch \
-		-no-xcb -no-xrender -no-xkbcommon \
-		-opengl desktop -no-egl -no-glib -no-gtkstyle \
+		-dbus -openssl -system-pcre \
+		-no-fontconfig -system-harfbuzz -system-freetype \
+		-gui -widgets -no-cups -no-icu -iconv \
+		-no-xcb -no-xkbcommon \
+		-opengl dynamic -no-glib \
 		-nomake examples \
+		`${TOOLCHAIN_TARGET}-pkg-config --cflags-only-I freetype2 dbus-1` \
 		|| error "configure failed"
 
 	cygmake
@@ -188,7 +188,7 @@ src_install() {
 	sed -i -e 's| -fdebug-prefix[^ ]*||g' qmodule.pri
 	popd
 
-	sed -i -e '/^Libs\.private/s/-luuid/-Wl,&/g' -e 's/-lqtharfbuzzng//g' ${D}${TOOLCHAIN_LIBDIR}/pkgconfig/*.pc
+	sed -i -e '/^Libs\.private/s/-luuid/-Wl,&/g' ${D}${TOOLCHAIN_LIBDIR}/pkgconfig/*.pc
 
 	dodoc ${S}/LGPL_EXCEPTION.txt ${S}/LICENSE.{FDL,*GPL}
 }
