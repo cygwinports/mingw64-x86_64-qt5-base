@@ -3,7 +3,7 @@ XQMAKESPEC="win32-g++"
 inherit toolchain
 
 NAME="mingw64-x86_64-qt5-base"
-VERSION=5.9.3
+VERSION=5.9.4
 RELEASE=1
 CATEGORY="Devel"
 SUMMARY="Qt core framework for Win64 toolchain"
@@ -56,6 +56,8 @@ fi
 # qmake/moc/uic/rcc are built native, libraries are cross-compiled
 # therefore, these need to be determined by mkspecs
 unset CC CXX
+CFLAGS+=" -Wno-deprecated-declarations -fno-delete-null-pointer-checks -fno-keep-inline-dllexport -fno-stack-protector"
+CXXFLAGS+=" -Wno-deprecated-declarations -fno-delete-null-pointer-checks -fno-keep-inline-dllexport -fno-stack-protector"
 
 src_compile() {
 	mkdir -p ${B}/shared
@@ -99,6 +101,9 @@ src_compile() {
 		-opengl desktop -no-egl -no-glib \
 		-nomake examples \
 		`${TOOLCHAIN_TARGET}-pkg-config --cflags-only-I freetype2 dbus-1` \
+		QMAKE_CFLAGS_RELEASE="${CFLAGS}" \
+		QMAKE_CXXFLAGS_RELEASE="${CXXFLAGS}" \
+		QMAKE_STRIP= \
 		|| error "configure failed"
 
 	cygmake
@@ -147,6 +152,9 @@ src_compile() {
 		-opengl dynamic -no-glib \
 		-nomake examples \
 		`${TOOLCHAIN_TARGET}-pkg-config --cflags-only-I freetype2 dbus-1` \
+		QMAKE_CFLAGS_RELEASE="${CFLAGS}" \
+		QMAKE_CXXFLAGS_RELEASE="${CXXFLAGS}" \
+		QMAKE_STRIP= \
 		|| error "configure failed"
 
 	cygmake

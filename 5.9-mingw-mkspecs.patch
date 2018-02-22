@@ -1,13 +1,13 @@
 --- origsrc/qtbase-opensource-src-5.9.3/mkspecs/win32-g++/qmake.conf	2017-11-15 23:15:28.000000000 -0600
 +++ src/qtbase-opensource-src-5.9.3/mkspecs/win32-g++/qmake.conf	2017-12-10 13:41:59.340720400 -0600
 @@ -19,6 +19,7 @@
- QMAKE_EXT_OBJ           = .o
- QMAKE_EXT_RES           = _res.o
+ DEFINES                += UNICODE _UNICODE
+ QMAKE_COMPILER_DEFINES += __GNUC__ WIN32
  
 +QMAKE_COMPILER          = gcc
- 
  QMAKE_CC                = $${CROSS_COMPILE}gcc
  QMAKE_LEX               = flex
+ QMAKE_LEXFLAGS          =
 @@ -58,6 +59,7 @@
  QMAKE_EXTENSION_SHLIB   = dll
  QMAKE_PREFIX_STATICLIB  = lib
@@ -36,8 +36,8 @@
 +QMAKE_PKG_CONFIG        = $${CROSS_COMPILE}pkg-config
 +
  include(../common/angle.conf)
- include(../common/gcc-base.conf)
  
+ load(qt_config)
 --- origsrc/qtbase-opensource-src-5.9.3/qmake/generators/win32/mingw_make.cpp	2017-12-10 14:36:48.359665800 -0600
 +++ src/qtbase-opensource-src-5.9.3/qmake/generators/win32/mingw_make.cpp	2017-12-10 18:48:38.313594300 -0600
 @@ -323,8 +323,9 @@ void MingwMakefileGenerator::writeBuildR
